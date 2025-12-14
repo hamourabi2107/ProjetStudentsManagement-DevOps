@@ -1,12 +1,15 @@
 pipeline {
     agent any
+
     stages {
+
         stage('Hello') {
             steps {
                 echo 'Hello from Jenkinsfile'
             }
         }
-        stage('Maven') {
+
+        stage('Check Maven') {
             steps {
                 sh 'mvn -version'
             }
