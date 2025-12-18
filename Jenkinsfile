@@ -15,14 +15,21 @@ pipeline {
                 sh 'mvn clean package -DskipTests'
             }
         }
+
+        stage('Build Docker Image') {
+            steps {
+                echo 'Building Docker image...'
+                sh 'docker build -t student-app:latest .'
+            }
+        }
     }
 
     post {
         success {
-            echo '✅ Build succeeded'
+            echo '✅ CI + Docker build succeeded'
         }
         failure {
-            echo '❌ Build failed'
+            echo '❌ Pipeline failed'
         }
     }
 }
