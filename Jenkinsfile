@@ -2,17 +2,27 @@ pipeline {
     agent any
 
     stages {
-
-        stage('Hello') {
+        stage('Checkout') {
             steps {
-                echo 'Hello from Jenkinsfile'
+                echo 'Cloning repository...'
+                checkout scm
             }
         }
 
-        stage('Check Maven') {
+        stage('Build with Maven') {
             steps {
-                sh 'mvn -version'
+                echo 'Building project with Maven...'
+                sh 'mvn clean package -DskipTests'
             }
+        }
+    }
+
+    post {
+        success {
+            echo '✅ Build succeeded'
+        }
+        failure {
+            echo '❌ Build failed'
         }
     }
 }
