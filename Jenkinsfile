@@ -2,34 +2,30 @@ pipeline {
     agent any
 
     stages {
+
         stage('Checkout') {
             steps {
-                echo 'Cloning repository...'
                 checkout scm
             }
         }
 
-        stage('Build with Maven') {
+        stage('Build') {
             steps {
-                echo 'Building project with Maven...'
-                sh 'mvn clean package -DskipTests'
+                sh 'mvn clean compile'
             }
         }
 
-        stage('Build Docker Image') {
+        stage('SonarQube Analysis') {
             steps {
-                echo 'Building Docker image...'
-                sh 'docker build -t student-app:latest .'
+                withCredentials([string(credentialsId: 'sonar-token', variable: 'SONAR_TOKEN')]) {
+                    sh '''
+                        mvn sonar:sonar \
+                        -Dsonar.projectKey=student-management \
+                        -Dsonar.host.url=http://192.168.50.4:9000 \
+                        -Dsonar.token=$SONAR_TOKEN
+                    '''
+                }
             }
-        }
-    }
-
-    post {
-        success {
-            echo '✅ CI + Docker build succeeded'
-        }
-        failure {
-            echo '❌ Pipeline failed'
         }
     }
 }
